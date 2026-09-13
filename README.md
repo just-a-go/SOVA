@@ -52,7 +52,9 @@ The formal experiments were run on H800 servers. The SOVA manuscript reports the
 | Method | CLEVRER | NExT-GQA | MMVU | MVBench | TempCompass | Video-MME |
 | :-- | --: | --: | --: | --: | --: | --: |
 | TW-GRPO control | 50.4 | 76.1 | 65.8 | 63.3 | **73.3** | 55.1 |
-| **SOVA** | **51.9** | **76.7** | **65.9** | **64.4** | **73.3** | **56.9** |
+| **SOVA** | **52.2** | **76.7** | **65.9** | **64.4** | **73.3** | **56.9** |
+
+The manuscript reports CLEVRER strict accuracy of **52.2 ± 0.36%** (mean ± sample standard deviation across five seeds), a gain of **1.8 percentage points** over the TW-GRPO control. CLEVRER aggregation weights the 3,945 single-answer and 5,293 multiple-answer questions by their counts; category strict accuracies are 62.2053% and 44.7194%, respectively, giving 52.1866% overall, rounded to 52.2%.
 
 This compact implementation targets the main **Qwen2.5-VL-7B** protocol and the **Qwen2.5-VL-3B** backbone. The paper's InternVL3 implementation and unrelated baseline methods are outside this release. The table reports manuscript results, not a rerun of this source release.
 

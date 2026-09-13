@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sova-video"
+version = "0.1.0"
+description = "Strict Outcome-Conditioned Virtual Advantages for Video Reasoning"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+dependencies = [
+    "torch==2.5.1", "torchvision==0.20.1", "transformers==4.50.0",
+    "accelerate==1.2.1", "trl==0.15.2", "datasets>=3.2.0,<4",
+    "qwen-vl-utils==0.0.10", "av>=12,<19", "pillow>=10", "numpy<3", "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+train = ["deepspeed==0.15.4"]
+test = ["pytest>=8"]
+
+[project.urls]
+Repository = "https://github.com/just-a-go/SOVA"
+
+[tool.setuptools.packages.find]
+include = ["sova*"]

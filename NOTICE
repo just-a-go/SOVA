@@ -1,0 +1,7 @@
+SOVA: Strict Outcome-Conditioned Virtual Advantages for Video Reasoning
+
+This implementation builds on TW-GRPO (https://github.com/longmalongma/TW-GRPO)
+and Hugging Face TRL (https://github.com/huggingface/trl), licensed under Apache-2.0.
+The token-weighting rule, format verifier, and single-use policy-ratio convention
+are adapted from TW-GRPO. Copyright 2025 The HuggingFace Team. All rights reserved.
+Qwen2.5-VL preprocessing utilities are installed as an external dependency.

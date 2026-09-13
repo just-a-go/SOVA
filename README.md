@@ -2,21 +2,39 @@
 
 # 🎬 SOVA: Strict Outcome-Conditioned Virtual Advantages for Video Reasoning
 
-**Recovering correctness signals at outcome extremes — without extra rollouts.**
-
-🤗 [Qwen2.5-VL Backbone](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct) · 📑 [TW-GRPO Paper](https://arxiv.org/abs/2505.24718) · 🧮 [SOVA Implementation](sova/core.py)
+🤗 [Qwen2.5-VL Backbone](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct) · 🧮 [Code](sova/core.py)
 
 </div>
 
-🚀 Official implementation of **SOVA: Strict Outcome-Conditioned Virtual Advantages for Video Reasoning**.
+Official implementation of **SOVA**. SOVA calibrates group-relative advantages for fully successful and all-zero-accuracy response groups using fixed virtual rewards and residual interpolation.
 
-Group-relative reinforcement learning relies on differences between sampled responses. When every response is correct, its learning signal disappears. When every response is incorrect, formatting can become the only source of reward contrast. **SOVA** recovers a correctness-oriented group signal by adding a fixed virtual reward to the normalization statistics and interpolating the resulting advantages with the original estimates.
+## Contents
 
-Built on **TW-GRPO**, SOVA retains token importance weighting and partial-credit rewards. Virtual anchors contribute **no response tokens, no extra policy rollouts, and no inference-time computation**.
+- [Motivation](#motivation)
+- [Method overview](#method-overview)
+- [Results](#results)
+- [Setup](#setup)
+- [Training](#training)
+- [Evaluation](#evaluation)
+- [Implementation checks](#implementation-checks)
+- [Repository layout](#repository-layout)
+- [Acknowledgements](#acknowledgements)
 
-## 🔥 Innovation
+<a id="motivation"></a>
 
-**Strict outcomes guide advantage calibration.** SOVA uses accuracy and format rewards to select two complementary branches:
+## 🎯 Motivation
+
+Fully correct, well-formatted groups have zero original advantages. All-incorrect groups can retain format-based differences but lack correctness contrast.
+
+![SOVA motivation](docs/figs/motivation.png)
+
+<a id="method-overview"></a>
+
+## 🔄 Method overview
+
+![SOVA training workflow](docs/figs/overview.png)
+
+SOVA uses accuracy and format rewards to select two branches:
 
 | Branch | When it activates | Virtual reward | Effect |
 | :-- | :-- | :--: | :-- |
@@ -25,12 +43,7 @@ Built on **TW-GRPO**, SOVA retains token importance weighting and partial-credit
 
 All other groups keep their original advantages exactly. In negative groups with mixed formatting, individual advantages can remain positive; the guarantee concerns the **group mean**.
 
-## ✨ Highlights
-
-- 🎯 **Outcome-conditioned correction.** Component-level gates distinguish strict successes, complete accuracy failures, and partially correct groups.
-- 🧮 **Simple, explicit statistics.** One scalar anchor, sample standard deviation, and a small residual interpolation implement the correction.
-- 🔄 **A matched TW-GRPO control.** Set both interpolation coefficients to zero; the data, rewards, token weights, and update pipeline stay identical.
-- 🪶 **Minimal source release.** Training, evaluation, video preprocessing, and focused tests. Download datasets and model weights separately.
+<a id="results"></a>
 
 ## 📊 Results
 
@@ -42,6 +55,8 @@ The formal experiments were run on H800 servers. The SOVA manuscript reports the
 | **SOVA** | **51.9** | **76.7** | **65.9** | **64.4** | **73.3** | **56.9** |
 
 This compact implementation targets the main **Qwen2.5-VL-7B** protocol and the **Qwen2.5-VL-3B** backbone. The paper's InternVL3 implementation and unrelated baseline methods are outside this release. The table reports manuscript results, not a rerun of this source release.
+
+<a id="setup"></a>
 
 ## 🛠️ Setup
 
@@ -104,6 +119,8 @@ python -m sova.prepare_clevrer \
 
 Repeat for validation. The converter retains counterfactual questions with nonempty correct-answer sets, as assumed in the paper, and resolves nested video directories. For the other benchmarks, adapt their annotations to the schema above with `options` containing labeled choices.
 
+<a id="training"></a>
+
 ## 🏃 Training
 
 ```bash
@@ -146,6 +163,8 @@ Append these options to the training command and choose a separate output direct
 
 Model and processor files are saved together in the output directory. Existing nonempty output directories are rejected to keep runs separate.
 
+<a id="evaluation"></a>
+
 ## 📈 Evaluation
 
 ```bash
@@ -158,7 +177,9 @@ CUDA_VISIBLE_DEVICES=0 python -m sova.evaluate \
 
 Use `nextgqa`, `mmvu`, `mvbench`, `tempcompass`, or `videomme` with the corresponding annotation file. The evaluator uses **16 frames, a 256 × 28 × 28 pixel budget per frame, temperature 0.01, top-p 0.001, and batch size 16**. It reports strict answer-set accuracy, partial credit, and format compliance, and saves each response. A lower `--batch-size` can reduce memory use but differs from the reported evaluation protocol.
 
-## ✅ Check the implementation
+<a id="implementation-checks"></a>
+
+## ✅ Implementation checks
 
 ```bash
 python -m pytest tests -q
@@ -166,7 +187,19 @@ python -m pytest tests -q
 
 The tests cover strict gates, sample statistics, mixed-format failures, exact bypass, group-size changes, reward parsing, EOS masks, data conversion, and TW weight gradients. A tiny randomly initialized Qwen2.5-VL model also reads a synthetic video, generates responses, completes an optimizer update, and runs the evaluator on CPU. This test downloads no dataset or pretrained checkpoint; it does not replace a full H800 benchmark reproduction.
 
-## 📁 Code
+<a id="repository-layout"></a>
+
+## 📁 Repository layout
+
+```text
+SOVA/
+├── docs/figs/              # Paper figures
+├── scripts/zero3_offload.json
+├── sova/                  # Training and evaluation
+├── tests/
+├── pyproject.toml
+└── README.md
+```
 
 | File | Purpose |
 | :-- | :-- |
@@ -177,10 +210,10 @@ The tests cover strict gates, sample statistics, mixed-format failures, exact by
 | [`sova/evaluate.py`](sova/evaluate.py) | Six-benchmark multiple-choice evaluation |
 | [`sova/prepare_clevrer.py`](sova/prepare_clevrer.py) | Official CLEVRER annotation conversion |
 
+<a id="acknowledgements"></a>
+
 ## 🙏 Acknowledgements
 
 We thank [TW-GRPO](https://github.com/longmalongma/TW-GRPO), [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video), [Video-R1](https://github.com/tulerfeng/Video-R1), [VideoChat-R1](https://github.com/OpenGVLab/VideoChat-R1), [TRL](https://github.com/huggingface/trl), and [Qwen2.5-VL](https://github.com/QwenLM/Qwen2.5-VL) for their open-source contributions.
-
-The SOVA paper link and citation will be added when its public manuscript is available. The preceding TW-GRPO work is [Reinforcing Video Reasoning with Focused Thinking](https://arxiv.org/abs/2505.24718).
 
 Released under the [Apache License 2.0](LICENSE); see [NOTICE](NOTICE) for attribution.

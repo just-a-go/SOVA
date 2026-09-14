@@ -218,4 +218,6 @@ SOVA/
 
 We thank [TW-GRPO](https://github.com/longmalongma/TW-GRPO), [Open-R1-Video](https://github.com/Wang-Xiaodong1899/Open-R1-Video), [Video-R1](https://github.com/tulerfeng/Video-R1), [VideoChat-R1](https://github.com/OpenGVLab/VideoChat-R1), [TRL](https://github.com/huggingface/trl), and [Qwen2.5-VL](https://github.com/QwenLM/Qwen2.5-VL) for their open-source contributions.
 
-Released under the [Apache License 2.0](LICENSE); see [NOTICE](NOTICE) for attribution.
+This implementation builds on [TW-GRPO](https://github.com/longmalongma/TW-GRPO) and [Hugging Face TRL](https://github.com/huggingface/trl), licensed under Apache-2.0. The token-weighting rule, format verifier, and single-use policy-ratio convention are adapted from TW-GRPO. Copyright 2025 The HuggingFace Team. All rights reserved. Qwen2.5-VL preprocessing utilities are installed as an external dependency.
+
+Released under the [Apache License 2.0](LICENSE).
